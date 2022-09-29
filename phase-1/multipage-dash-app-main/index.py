@@ -42,7 +42,7 @@ def display_page(pathname):
     if pathname == '/page2':
         return page2.layout
     else:
-        return "404 Page Error! Please choose a link"
+        return "Welcome to Smarth Home!"
 
 # Run the app on localhost:8050
 if __name__ == '__main__':
