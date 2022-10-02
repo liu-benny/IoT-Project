@@ -31,8 +31,12 @@ layout = html.Div([
         id='light-switch',
         on=True,
         color='#00EA64',
+    style={'transform': 'scaleX(1.25) scaleY(1.25)'}
     )
-    ])
+    ],
+    
+    style={'text-align': 'center'}
+    )
     
     # daq.ToggleSwitch(
     #     id='darktheme-daq-toggleswitch',
