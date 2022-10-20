@@ -20,6 +20,14 @@ def get_temperature():
         return dht.temperature
     return 0
 
+def get_humidity():
+    dht = DHT.DHT(DHTPin)
+
+    chk = dht.readDHT11()
+    if(chk is dht.DHTLIB_OK):
+        return dht.humidity
+    return 0
+
 def loop():
     dht = DHT.DHT(DHTPin)   #create a DHT class object
     counts = 0 # Measurement counts

@@ -33,14 +33,23 @@ layout = html.Div([
     html.Div([
         dcc.Interval(id='interval',interval=5 *1000, n_intervals=0),
         daq.Gauge(
-        id='temperature',
-        color={"gradient":True,"ranges":{"blue":[-40,0],"orange":[0,25],"red":[25,40]}},
-        value=0,
-        scale={'start':-40,'interval':5},
-        label='Temperature',
-        max=40,
-        min=-40,
-    )
+            id='temperature',
+            color={"gradient":True,"ranges":{"blue":[-40,0],"orange":[0,25],"red":[25,40]}},
+            value=0,
+            scale={'start':-40,'interval':5},
+            label='Temperature',
+            max=40,
+            min=-40,
+        ),
+        daq.Thermometer(
+            id='humidity',
+            color="orange",
+            value=0,
+            scale={'start':0,'interval':5},
+            label='Humidity',
+            max=100,
+            min=-0,
+        )
     ])
     ],
     
@@ -50,13 +59,12 @@ layout = html.Div([
 )
     
     
-
+# callback for LED
 @callback(
     Output('lightbulb', 'class'),
     # Input('my-indicator-button-1', 'n_clicks'),
     Input('light-switch','on')
 )
-
 def check_light_switch(isOn):
     if isOn == False:
         GPIO.output(buzzer,GPIO.LOW)
@@ -65,9 +73,18 @@ def check_light_switch(isOn):
         GPIO.output(buzzer,GPIO.HIGH)
         return f'bi bi-lightbulb-fill text-success'
 
+# callback for temperature
 @callback(
     Output('temperature','value'),
     Input('interval','n_intervals')
 )
 def check_temperature(interval):
     return DHT.get_temperature()
+
+# callback for humidity
+@callback(
+    Output('humidity','value'),
+    Input('interval','n_intervals')
+)
+def check_humidity(interval):
+    return DHT.get_humidity()
