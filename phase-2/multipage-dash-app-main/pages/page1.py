@@ -6,15 +6,6 @@ import dash_bootstrap_components as dbc
 # email scripts
 from email_func import send, receive
 
-# Replace libraries by fake ones
-import sys
-import fake_rpi
-
-sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
-sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
-sys.modules['smbus'] = fake_rpi.smbus # Fake smbus (I2C)
-
-
 #Libraries
 #import components.DHT11.DHT11 as DHT
 import RPi.GPIO as GPIO
@@ -30,8 +21,12 @@ light=19
 GPIO.setup(light,GPIO.OUT)                                                         
 
 #Set fan pin
-fan=21
-GPIO.setup(fan,GPIO.OUT) 
+fan1=21
+fan2=13
+fan3=19
+GPIO.setup(fan1,GPIO.OUT) 
+GPIO.setup(fan2,GPIO.OUT) 
+GPIO.setup(fan3,GPIO.OUT) 
 
 #bool for fan and email sent
 emailSent=False
@@ -164,10 +159,14 @@ def check_light_switch(isOn):
 )
 def check_fan_switch(isOn):
     if isOn == False:
-        GPIO.output(fan,GPIO.LOW)
+        GPIO.output(fan1,GPIO.LOW)
+        GPIO.output(fan2,GPIO.LOW)
+        GPIO.output(fan3,GPIO.LOW)
         return f'bi bi-slash-circle'
     else:
-        GPIO.output(fan,GPIO.HIGH)
+        GPIO.output(fan1,GPIO.HIGH)
+        GPIO.output(fan2,GPIO.HIGH)
+        GPIO.output(fan3,GPIO.LOW)
         return f'bi bi-fan'
 
 #callback for temperature
@@ -186,28 +185,16 @@ def check_temperature(interval, isOn):
     
     #have to check if fan is on
     if (temp > 24 and not isOn):
-        if (not receive.check_email('The currenty temperature is', user, password)):
-            message =  "The currenty temperature is {temp}. Would you like to turn on the fan?".format(temp=temp)
+        if (not receive.check_email('The current temperature is', user, password)):
+            message =  "The current temperature is {temp}. Would you like to turn on the fan?".format(temp=temp)
             send.send_email(message, user, password)
         else:
-            print("a")
-            if (receive.check_email('HELL YES', user, password)):
+            if (receive.check_email('YES', user, password)):
                 #turn on fan
-                print("a")
+                message =  "Fan has turned on."
+                send.send_email(message, user, password)
+                
                 return temp, True
-
-    #have to check if fan is on
-#     if (temp > 24):
-#         if (receive.test()):
-#             print("email send")
-#             send.test()
-#         else:
-#             send.test()
-#             print("reply yes send")
-#             #turn on fan
-#             
-#             print("a")
-#             return temp, True
 
     return temp, isOn
 
