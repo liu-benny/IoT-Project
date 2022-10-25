@@ -1,7 +1,8 @@
 import smtplib
 
+
 def send_email(msg, user, password):
-    password = 'insert pass here'
+    password = 'd34HqY87m6bL'
     server = 'localhost'
     # server = '192.168.0.11' AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 
@@ -20,3 +21,4 @@ Subject: Message sent from Python
         print (f"Message '{msg}' sent to {user}")
     except smtplib.SMTPException:
         print ("Could not send email")
+

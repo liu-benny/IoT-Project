@@ -170,29 +170,55 @@ def check_fan_switch(isOn):
         GPIO.output(fan,GPIO.HIGH)
         return f'bi bi-fan'
 
-# callback for temperature
+#callback for temperature
 @callback(
-    Output('temperature','value'),
-    Input('interval','n_intervals')
+    [Output('temperature','value'),
+     Output('fan-switch','on')],
+    [Input('interval','n_intervals'),
+     Input('fan-switch','on')]
 )
-def check_temperature(interval):
+def check_temperature(interval, isOn):
     # temp = DHT.get_temperature()
-    temp = 27
+    temp = 25
     
     user = '2082991@iotvanier.com'
-    password = 'insert pass here'
+    password = 'd34HqY87m6bL'
     
     #have to check if fan is on
-    if (temp > 24):
-        if (not receive.check_email('The current temperature is', user, password)):
-            message =  "The current temperature is {temp}. Would you like to turn on the fan?".format(temp=temp)
+    if (temp > 24 and not isOn):
+        if (not receive.check_email('The currenty temperature is', user, password)):
+            message =  "The currenty temperature is {temp}. Would you like to turn on the fan?".format(temp=temp)
             send.send_email(message, user, password)
         else:
             print("a")
-            if (receive.check_email('YES', user, password)):
+            if (receive.check_email('HELL YES', user, password)):
                 #turn on fan
                 print("a")
-    return temp
+                return temp, True
+
+    #have to check if fan is on
+#     if (temp > 24):
+#         if (receive.test()):
+#             print("email send")
+#             send.test()
+#         else:
+#             send.test()
+#             print("reply yes send")
+#             #turn on fan
+#             
+#             print("a")
+#             return temp, True
+
+    return temp, isOn
+
+# # callback for temperature
+# @callback(
+#     Output('temperature','value'),
+#     Input('interval','n_intervals')
+# )
+# def check_temperature(interval):
+#     #return DHT.get_humidity()
+#     return 22
 
 # callback for humidity
 @callback(
