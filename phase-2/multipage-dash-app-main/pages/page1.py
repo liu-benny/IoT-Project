@@ -7,7 +7,7 @@ import dash_bootstrap_components as dbc
 from email_func import send, receive
 
 #Libraries
-#import components.DHT11.DHT11 as DHT
+import components.DHT11.DHT11 as DHT
 import RPi.GPIO as GPIO
 
 from time import sleep
