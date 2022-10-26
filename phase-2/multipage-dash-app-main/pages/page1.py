@@ -17,7 +17,7 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
 #Set light - pin 23 as output
-light=19
+light=23
 GPIO.setup(light,GPIO.OUT)                                                         
 
 #Set fan pin
@@ -35,15 +35,27 @@ box_style_dict = {
     'width': '45%',
     'border': '3px solid gray',
     'margin': '2.5%',
-    'height': '400px'
+    'height': '450px'
+}
+
+box_name_dict = {
+    'border-bottom': '2px solid lightblue',
+    'line-height' : '50px',
+    'font': 'bold 20px/50px Arial, sans-serif',
+    'height': '50px'
 }
 
 layout = html.Div([
     html.Div([
+        html.Div(['Lights',
+        ], 
+        style = box_name_dict
+        ),
+        
         html.Div([
             html.I(id='lightbulb',
             className="bi bi-lightbulb",
-            style={'font-size': '10rem','width':'500px','padding-top': '70px'}),
+            style={'font-size': '10rem','width':'500px','padding-top': '60px'}),
             
             daq.BooleanSwitch(
                 id='light-switch',
@@ -53,14 +65,18 @@ layout = html.Div([
             ),
             
         ],
-        style = {'float': 'left', 'width' : '100%', 'padding-top' : '50px'}
+        style = {'float': 'left', 'width' : '100%', 'padding-top' : '25px'}
         ),
     ], 
-            
         style = box_style_dict | {'float': 'left'}
     ),
         
     html.Div([
+        html.Div(['Fan',
+        ], 
+        style = box_name_dict
+        ),
+        
         html.Div([
         dcc.Interval(id='interval',interval=5 *1000, n_intervals=0),
         daq.Gauge(
@@ -75,7 +91,7 @@ layout = html.Div([
         ),
         ], 
         
-        style = {'float':'left', 'width': '33%','padding-top': '50px'}
+        style = {'float':'left', 'width': '33%','padding-top': '25px'}
                  
         ),
         
@@ -93,10 +109,8 @@ layout = html.Div([
         
         ], 
             
-        style = {'float':'left', 'width': '33%','padding-top': '50px'}
+        style = {'float':'left', 'width': '33%','padding-top': '25px'}
         ),
-        
-        
         
         html.Div([
             daq.Thermometer(
@@ -107,10 +121,11 @@ layout = html.Div([
                 label='Humidity',
                 max=100,
                 min=-0,
+                style={'transform': 'scaleX(0.80) scaleY(0.80)'}
             )
         ], 
         
-        style = {'float':'right', 'width': '33%','padding-top': '50px'}
+        style = {'float':'right', 'width': '33%','padding-top': '25px'}
         ),
     ], 
     
@@ -118,12 +133,20 @@ layout = html.Div([
     ),
     
     html.Div([
+        html.Div(['x',
+        ], 
+        style = box_name_dict
+        ),
     ], 
     
     style = box_style_dict | {'float': 'left','clear' : 'left'}
     ),
     
     html.Div([
+        html.Div(['x',
+        ], 
+        style = box_name_dict
+        ),
     ], 
     
     style = box_style_dict | {'float': 'right','clear' : 'right'}
@@ -162,12 +185,12 @@ def check_fan_switch(isOn):
         GPIO.output(fan1,GPIO.LOW)
         GPIO.output(fan2,GPIO.LOW)
         GPIO.output(fan3,GPIO.LOW)
-        return f'bi bi-slash-circle'
+        return f'bi bi-slash-circle text-danger'
     else:
         GPIO.output(fan1,GPIO.HIGH)
         GPIO.output(fan2,GPIO.HIGH)
         GPIO.output(fan3,GPIO.LOW)
-        return f'bi bi-fan'
+        return f'bi bi-fan text-success'
 
 #callback for temperature
 @callback(
@@ -177,8 +200,7 @@ def check_fan_switch(isOn):
      Input('fan-switch','on')]
 )
 def check_temperature(interval, isOn):
-    # temp = DHT.get_temperature()
-    temp = 25
+    temp = DHT.get_temperature()
     
     user = '2082991@iotvanier.com'
     password = 'd34HqY87m6bL'
@@ -198,20 +220,10 @@ def check_temperature(interval, isOn):
 
     return temp, isOn
 
-# # callback for temperature
-# @callback(
-#     Output('temperature','value'),
-#     Input('interval','n_intervals')
-# )
-# def check_temperature(interval):
-#     #return DHT.get_humidity()
-#     return 22
-
 # callback for humidity
 @callback(
     Output('humidity','value'),
     Input('interval','n_intervals')
 )
 def check_humidity(interval):
-    #return DHT.get_humidity()
-    return 52
+    return DHT.get_humidity()
