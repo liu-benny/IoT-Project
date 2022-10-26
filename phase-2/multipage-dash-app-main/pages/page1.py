@@ -7,7 +7,7 @@ import dash_bootstrap_components as dbc
 from email_func import send, receive
 
 #Libraries
-#import components.DHT11.DHT11 as DHT
+import components.DHT11.DHT11 as DHT
 import RPi.GPIO as GPIO
 
 from time import sleep
@@ -203,7 +203,7 @@ def check_temperature(interval, isOn):
     temp = DHT.get_temperature()
     
     user = '2082991@iotvanier.com'
-    password = '***REMOVED***'
+    password = 'd34HqY87m6bL'
     
     #have to check if fan is on
     if (temp > 24 and not isOn):
