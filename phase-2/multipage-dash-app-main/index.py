@@ -21,7 +21,6 @@ app = dash.Dash(
     external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
 )
 
-
 # Define the index page layout
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
