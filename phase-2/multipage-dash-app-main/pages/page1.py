@@ -159,3 +159,4 @@ def check_temperature(interval):
 )
 def check_humidity(interval):
     return DHT.get_humidity()
+
