@@ -10,14 +10,8 @@ import paho.mqtt.client as mqtt
 # email class
 from email_classes.email_logic import EmailController
 
-import sys
-import fake_rpi
-
-sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
-sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
-
 #Libraries
-# import components.DHT11.DHT11 as DHT
+import components.DHT11.DHT11 as DHT
 import RPi.GPIO as GPIO
 
 from time import sleep
@@ -236,8 +230,8 @@ def check_fan_switch(isOn):
      Input('fan-switch','on')]
 )
 def check_temperature(interval, isOn):
-#     temp = DHT.get_temperature()
-    temp = 22
+    temp = DHT.get_temperature()
+#     temp = 22
     
     #have to check if fan is on
     if (temp > 24 and not isOn and not fan_email_controller.received):
@@ -268,30 +262,27 @@ def check_temperature(interval, isOn):
     Input('interval','n_intervals')
 )
 def check_humidity(interval):
-#     return DHT.get_humidity()
-    return 22
+    return DHT.get_humidity()
+#     return 22
+
+# The callback for when the client receives a CONNACK response from the server.
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code "+str(rc))
+
+    # Subscribing in on_connect() means that if we lose the connection and
+    # reconnect then subscriptions will be renewed.
+    client.subscribe("IoTlab/ESP")
+
+# The callback for when a PUBLISH message is received from the server.
+def on_message(client, userdata, msg):
+    print(msg.topic+" "+str(msg.payload))
+    
+    lightLevel = float(str(msg.payload))
 
 
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
 
-
-# # The callback for when the client receives a CONNACK response from the server.
-# def on_connect(client, userdata, flags, rc):
-#     print("Connected with result code "+str(rc))
-# 
-#     # Subscribing in on_connect() means that if we lose the connection and
-#     # reconnect then subscriptions will be renewed.
-#     client.subscribe("IoTlab/ESP")
-# 
-# # The callback for when a PUBLISH message is received from the server.
-# def on_message(client, userdata, msg):
-#     print(msg.topic+" "+str(msg.payload))
-#     
-#     lightLevel = float(str(msg.payload))
-# 
-# 
-# client = mqtt.Client()
-# client.on_connect = on_connect
-# client.on_message = on_message
-# 
-# client.connect("192.168.0.128", 1883, 80)
-# client.loop()
+client.connect("192.168.0.128", 1883, 80)
+client.loop()
