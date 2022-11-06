@@ -36,7 +36,7 @@ def display_page(pathname):
     if pathname == '/page2':
         return page2.layout
     else:
-        return "Welcome to Smarth Home!"
+        return page1.layout
 
 # Run the app on localhost:8050
 if __name__ == '__main__':

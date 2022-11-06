@@ -19,6 +19,9 @@ def Navbar():
             label="More",
         ),
     ],
+    style={
+        'min-width' : '800px'
+    },
     brand="Smarth Home",
     brand_href="/page1",
     color="primary",
