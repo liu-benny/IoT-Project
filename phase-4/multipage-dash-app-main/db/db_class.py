@@ -27,14 +27,11 @@ TempThreshold INT,
 HumidityThreshold INT,
 LightThreshold INT)''')
             self.insertUser(default_admin_card, "admin", 22, 80, 500)
-            self.changeUser(default_admin_card)
         
-        else:
-            self.mycursor.execute("USE smarthome_db")
-            
-        self.insertUser(default_admin_card, "admin", 22, 80, 500)
+        self.mycursor.execute("USE smarthome_db")
+        self.changeUser(default_admin_card)
+        
         self.readAll()
-        
         
         
     def insertUser(self, user_id, name, temp_threshold, humidity_threshold, light_threshold):

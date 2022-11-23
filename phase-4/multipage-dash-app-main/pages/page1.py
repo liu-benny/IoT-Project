@@ -38,8 +38,8 @@ GPIO.setup(fan2,GPIO.OUT)
 GPIO.setup(fan3,GPIO.OUT) 
 
 #email controller for fan and light
-fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL')
-light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL')
+fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
+light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
 
 admin_card = "aaaaaaaaaaa"
 db_connection = DbConnector(admin_card)
@@ -59,9 +59,10 @@ box_style_dict = {
     'border': '3px solid gray',
     'margin': '25px 1%',
     'height': '450px',
-    'background-color' : 'rgba(3, 138, 255, 0.90)',
+    'background-color' : 'rgba(159, 168, 181, 0.90)',
     'min-width': '270px',
-    'position' : 'relative'
+    'position' : 'relative',
+    'box-shadow' : '2px 1px 8px 1px rgb(120, 120, 120)'
 }
 
 box_name_dict = {
@@ -148,7 +149,7 @@ layout = html.Div([
                 
                 html.Div([
                     html.Div(['Light intensity'], style = box_label_dict),
-                    html.Div([], id='LightNumber', style = box_num_dict),
+                    html.Div(['Checking...'], id='LightNumber', style = box_num_dict),
                 ])
             ], 
                 style = box_style_dict | {'float': 'left'}
@@ -176,7 +177,7 @@ layout = html.Div([
                 ], 
                     
                 style = {'float':'left', 'width' : '100%', 'padding-top': '25px'}
-                ),
+                )
                 
                 
             ], 
@@ -200,13 +201,16 @@ layout = html.Div([
                     max=40,
                     min=-40,
                     style={'transform': 'scaleX(0.80) scaleY(0.80)'}
-                ),
-                html.H1(id='TemperatureNumber'),
-                ], 
+                )], 
                 
                 style = {'float':'left', 'width' : '100%', 'padding-top': '25px'}
                          
-                )
+                ),
+                
+                html.Div([
+                    html.Div(['Temperature'], style = box_label_dict),
+                    html.Div(['Checking...'], id='TemperatureNumber', style = box_num_dict),
+                ])
             ], 
             
             style = box_style_dict | {'float': 'left'}
@@ -227,12 +231,16 @@ layout = html.Div([
                         max=100,
                         min=-0,
                         style={'transform': 'scaleX(0.80) scaleY(0.80)'}
-                    ),
-                    html.H1(id='ThermometerNumber'),
+                    )
                 ], 
                 
                 style = {'float':'right', 'width' : '100%', 'padding-top': '25px'}
-                )
+                ),
+                
+                html.Div([
+                    html.Div(['Humidity'], style = box_label_dict),
+                    html.Div(['Checking...'], id='ThermometerNumber', style = box_num_dict),
+                ])
             ], 
             
             style = box_style_dict | {'float': 'left'}
@@ -258,8 +266,7 @@ layout = html.Div([
         ],
         style= {            
             'min-width' : '800px',
-            'height' : '100%',
-            'overflow-x': 'scroll'
+            'height' : '100%'
         }
     )
     
@@ -299,9 +306,9 @@ def check_light_switch(isOn,interval):
     Input('interval','n_intervals'))
 def update_intensity(interval):
     if (lvl.light_level < 0):
-        return "Checking light intensity..."
+        return "Checking..."
     else:
-        return "Current light intensity: " + str(lvl.light_level)
+        return str(lvl.light_level)
     
 
 # callback for motor
@@ -347,22 +354,25 @@ def check_temperature(interval, isOn, displayTemperature):
             fan_email_controller.send_email(message)
             fan_email_controller.sent = True
         else:
-            if (fan_email_controller.check_email('YES')):
+            if (fan_email_controller.check_email_response() == 1):
                 #turn on fan
                 message =  "Fan has turned on."
-                print(message)
                 fan_email_controller.send_email(message)
                 fan_email_controller.sent = False
                 
-                return temp, temp, True
+                return str(temp) + u'\N{DEGREE SIGN} C', temp, True
             
-            elif (fan_email_controller.check_email('NO')):
+            elif (fan_email_controller.check_email_response() == 0):
                 #keep fan off
                 message =  "Fan will remain off."
-                print(message)
                 fan_email_controller.send_email(message)
                 fan_email_controller.sent = False
             
+            elif (fan_email_controller.check_email_response() == 2):
+                #send another email to say it does not understand.
+                message =  "Response not understood. Please answer with 'YES' or 'NO'."
+                fan_email_controller.send_email(message)
+    
     return str(temp) + u'\N{DEGREE SIGN} C' , temp, isOn
 
 # callback for humidity
@@ -374,7 +384,7 @@ def check_temperature(interval, isOn, displayTemperature):
 )
 def check_humidity(interval, displayHumidity):
     return DHT.get_humidity(), DHT.get_humidity()
-#     return 22
+#     return str(22) + "%", 22
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
@@ -382,16 +392,16 @@ def on_connect(client, userdata, flags, rc):
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe("IoTlab/ESP")
-    client.subscribe("IoTlab/ESP/rfid")
+    client.subscribe("Smarthome/ESP/light")
+    client.subscribe("Smarthome/ESP/rfid")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
 #     print(msg.topic+" "+str(msg.payload))
     
-    if ('ESP' in msg.topic):
+    if ('light' in msg.topic):
         lvl.light_level = float(str(msg.payload)[2:-1])
-    if ('SCAN' in msg.topic):
+    if ('rfid' in msg.topic):
         db_connection.changeUser(str(msg.payload)[2:-1])
 
 
@@ -399,5 +409,5 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-# client.connect("192.168.0.128", 1883, 80)
-# client.loop_start()
+client.connect("192.168.0.128", 1883, 80)
+client.loop_start()

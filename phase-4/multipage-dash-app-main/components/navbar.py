@@ -22,9 +22,9 @@ def Navbar():
     style={
         'min-width' : '800px'
     },
-    brand="Smarth Home",
+    brand="Smart Home",
     brand_href="/page1",
-    color="primary",
+    color="rgb(137,144,156)",
     dark=True)
     #])
 
