@@ -283,7 +283,8 @@ def check_light_switch(isOn,interval):
         if (lvl.light_level < 200 and not light_email_controller.sent):
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
-            light_email_controller.send_email('Light is lower than 200. Turning on lights at: ' + current_time)
+            current_date = now.strftime("%Y-%m-%d")
+            light_email_controller.send_email('Light is lower than 200. Turning on lights at ' + current_time + ' on ' + current_date)
             soundFunction.lightOn()
             GPIO.output(light,GPIO.HIGH)
             light_email_controller.sent = True
@@ -409,5 +410,5 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("192.168.0.128", 1883, 80)
+client.connect("192.168.0.153", 1883, 80)
 client.loop_start()

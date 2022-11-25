@@ -1,8 +1,11 @@
 # Import necessary libraries 
-from dash import html, dcc
+from dash import html, dcc, Input, Output
 from dash.dependencies import Input, Output
 import dash
 import dash_bootstrap_components as dbc
+
+# import plotly.express as px
+# from dash_bootstrap_templates import ThemeSwitchAIO
 
 # Connect to main app.py file
 from app import app
@@ -18,7 +21,7 @@ nav = navbar.Navbar()
 
 # define bootstrap icons
 app = dash.Dash(
-    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP]
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP, dbc.themes.COSMO]
 )
 
 # Define the index page layout
@@ -27,6 +30,15 @@ app.layout = html.Div([
     nav, 
     html.Div(id='page-content', children=[]), 
 ])
+
+# @app.callback(
+#     Output("theme-switch-graph", "figure"),
+#     Input(ThemeSwitchAIO.ids.switch("theme"), "value"),
+# )
+# def update_graph_theme(toggle):
+#     template = "cosmo" if toggle else "cyborg"
+#     return px.line(template=template)
+
 
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])

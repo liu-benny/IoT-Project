@@ -54,61 +54,66 @@ Subject: {sbjt}
 
         # get email and content
         
-        i = mail_ids.pop()
+        rev_ids = mail_ids[::-1]
         
-        status, data = inbox.fetch(i, "(RFC822)")
+        for i in rev_ids:
         
-        for response_part in data:
-            if isinstance(response_part, tuple):
-                recieved_message = email.message_from_bytes(response_part[1])
-                
-                # checking sender and receiver
-                # TODO IF ITS FROM THE CODE THEN EXIT LOOP AND RETURN 3
-                mail_sender = recieved_message["from"]
-                mail_receiver = recieved_message["to"]
-                
-                # filtering for specified sender, which is ourselves
-                if self.user in mail_sender:
+            status, data = inbox.fetch(i, "(RFC822)")
+            
+            for response_part in data:
+                if isinstance(response_part, tuple):
+                    recieved_message = email.message_from_bytes(response_part[1])
                     
-                    # checking subject, checking for temp or for lights
-                    mail_subject = recieved_message["subject"]
+                    # checking sender and receiver
+                    # TODO IF ITS FROM THE CODE THEN EXIT LOOP AND RETURN 3
+                    mail_sender = recieved_message["from"]
+                    mail_receiver = recieved_message["to"]
                     
-                    if (self.subject in mail_subject):
-                        # checking content 
-                        if recieved_message.is_multipart():
-                            mail_content = ''
+                    if ("Smarthome User" in mail_receiver):
+                        return 3
+                    
+                    # filtering for specified sender, which is ourselves
+                    if self.user in mail_sender:
+                        
+                        # checking subject, checking for temp or for lights
+                        mail_subject = recieved_message["subject"]
+                        
+                        if (self.subject in mail_subject):
+                            # checking content 
+                            if recieved_message.is_multipart():
+                                mail_content = ''
 
-                            for part in recieved_message.get_payload():
-                                if part.get_content_type() == "text/plain":
-                                    mail_content += part.get_payload()
-                        else:
-                            mail_content = recieved_message.get_payload()
-                        
-                        # check mail content with or without caps
-                        filter = "YES"
-                        if (filter.casefold() in mail_content.casefold()):
-                            # print mail
-                            print(f"From: {mail_sender}")
-                            print(f"To: {mail_receiver}")
-                            print(f"Subject: {mail_subject}")
-                            print(f"Content: {mail_content}")
+                                for part in recieved_message.get_payload():
+                                    if part.get_content_type() == "text/plain":
+                                        mail_content += part.get_payload()
+                            else:
+                                mail_content = recieved_message.get_payload()
                             
-                            self.received = True
-                            return 1
-                        
-                        filter = "NO"
-                        if (filter.casefold() in mail_content.casefold()):
-                            # print mail
-                            print(f"From: {mail_sender}")
-                            print(f"To: {mail_receiver}")
-                            print(f"Subject: {mail_subject}")
-                            print(f"Content: {mail_content}")
+                            # check mail content with or without caps
+                            filter = "YES"
+                            if (filter.casefold() in mail_content.casefold()):
+                                # print mail
+                                print(f"From: {mail_sender}")
+                                print(f"To: {mail_receiver}")
+                                print(f"Subject: {mail_subject}")
+                                print(f"Content: {mail_content}")
+                                
+                                self.received = True
+                                return 1
                             
-                            self.received = True
-                            return 0
-                        
-                        #do not change received or else it will stop looking when bad response   
-                        return 2
+                            filter = "NO"
+                            if (filter.casefold() in mail_content.casefold()):
+                                # print mail
+                                print(f"From: {mail_sender}")
+                                print(f"To: {mail_receiver}")
+                                print(f"Subject: {mail_subject}")
+                                print(f"Content: {mail_content}")
+                                
+                                self.received = True
+                                return 0
+                            
+                            #do not change received or else it will stop looking when bad response   
+                            return 2
                    
                    #once you have the check to see if its from user or from code
                     # then you can return 3

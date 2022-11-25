@@ -2,30 +2,36 @@
 from dash import html
 import dash_bootstrap_components as dbc
 
+# import plotly.express as px
+# from dash_bootstrap_templates import ThemeSwitchAIO
 
+# theme_switch = ThemeSwitchAIO(aio_id="theme", themes=[dbc.themes.COSMO, dbc.themes.CYBORG])
 # Define the navbar structure
 def Navbar():
 
     layout = dbc.NavbarSimple(
     children=[
         dbc.NavItem(dbc.NavLink("Page 1", href="/page1")),
+        dbc.NavItem(dbc.NavLink("Page 2", href="/page2")),
         dbc.DropdownMenu(
             children=[
-                dbc.DropdownMenuItem("More pages", header=True),
-                dbc.DropdownMenuItem("Page 2", href="/page2"),
+#                 dbc.DropdownMenuItem("Theme", header=True),#############################################################################################
+#                 dbc.Container([theme_switch], className="m-4 dbc"),#############################################################################################
             ],
             nav=True,
             in_navbar=True,
-            label="More",
+#             label="Theme Color",#############################################################################################
         ),
     ],
     style={
-        'min-width' : '800px'
+        'min-width' : '800px',
     },
-    brand="Smart Home",
+    brand="Smarth Home",
+    
     brand_href="/page1",
-    color="rgb(137,144,156)",
+    color="primary",
     dark=True)
     #])
+
 
     return layout
