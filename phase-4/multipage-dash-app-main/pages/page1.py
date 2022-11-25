@@ -70,34 +70,28 @@ box_name_dict = {
     'line-height' : '50px',
     'font': 'bold 20px/50px Arial, sans-serif',
     'height': '50px',
-    'background-color' : 'rgba(128, 128, 128, 0.2)'
 }
 
-box_label_dict = {
+box_bottom_dict = {
     'border-top': '2px solid lightblue',
     'line-height' : '40px',
     'font': 'bold 16px/40px Arial, sans-serif',
     'height': '40px',
-    'background-color' : 'rgba(128, 128, 128, 0.2)',
     'width' : '50%',
-    'text-align' : 'left',
     'padding' : '0px 10px',
     'position': 'absolute',
     'bottom': '0',
+}
+
+box_label_dict = box_bottom_dict | {
+    'background-color' : 'rgba(128, 128, 128, 0.2)',
+    'text-align' : 'left',
     'left' : '0',
 }
 
-box_num_dict = {
-    'border-top': '2px solid lightblue',
-    'line-height' : '40px',
-    'font': 'bold 16px/40px Arial, sans-serif',
-    'height': '40px',
+box_num_dict = box_bottom_dict | {
     'background-color' : 'rgba(192, 192, 192, 0.2)',
-    'width' : '50%',
     'text-align' : 'right',
-    'padding' : '0px 10px',
-    'position': 'absolute',
-    'bottom': '0',
     'right' : '0',
 }
 
@@ -111,7 +105,7 @@ layout = html.Div([
                 'height': '100%',
                 'width' : '20%',
                 'float': 'left',
-                'background-color' : 'black'
+                'background-color' : 'rgb(236, 237, 238)'
             }
         ),
 
@@ -120,7 +114,7 @@ layout = html.Div([
             html.Div([
                 html.Div(['Lights Control',
                 ], 
-                style = box_name_dict
+                style = box_name_dict | {'background-color' : 'rgba(239, 190, 125, 0.55)'}
                 ),
                 dbc.Modal(
                     [
@@ -159,7 +153,7 @@ layout = html.Div([
             html.Div([
                 html.Div(['Fan Control',
                 ], 
-                style = box_name_dict
+                style = box_name_dict | {'background-color' : 'rgba(139, 211, 230, 0.55)'}
                 ),
                 
                 html.Div([
@@ -188,7 +182,7 @@ layout = html.Div([
             html.Div([
                 html.Div(['Temperature Detection',
                 ], 
-                style = box_name_dict
+                style = box_name_dict | {'background-color' : 'rgba(177, 162, 202, 0.55)'}
                 ),
                 
                 html.Div([
@@ -219,7 +213,7 @@ layout = html.Div([
             html.Div([
                 html.Div(['Humidity Detection',
                 ], 
-                style = box_name_dict
+                style = box_name_dict | {'background-color' : 'rgba(255, 109, 106, 0.55)'}
                 ),
                 
                 html.Div([
@@ -410,5 +404,5 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("192.168.0.153", 1883, 80)
-client.loop_start()
+# client.connect("192.168.0.153", 1883, 80)
+# client.loop_start()

@@ -25,74 +25,85 @@ rfid_id = RfidScan()
 
 # Define the final page layout
 layout = dbc.Container([
-    dcc.Input(
-    id='user-id-input',
-    disabled=True,
-    size=90,
-    placeholder='Scan your RFID tag',
-    type='text',
-    value=''
-),
-dbc.Modal(
-                    [
-                        dbc.ModalHeader(dbc.ModalTitle("User Creation")),
-                        dbc.ModalBody("", id='alert_body'),
-                        
-                    ],
-                    id="alert",
-                    is_open=False,
-                ),
-# name
-dcc.Input(
-    id='name-input',
-    size=90,
-    placeholder='Enter your name',
-    type='text'
-),
-
-# temp threshold
-daq.NumericInput(
-    id='temp-threshold-input',
-    disabled=False,
-    size=90,
-    min=-40,
-    max=40,
-),
-
-
-
-# humidity threshold
-daq.NumericInput(
-    id='humidity-threshold-input',
-    disabled=False,
-    size=90,
-    min=0,
-    max=100,
-
-),
-
-# light intensity threshold
-daq.NumericInput(
-    id='light-threshold-input',
-    disabled=False,
-    size=90,
-    min=0,
-    max=1000,
-
-),
-
-html.Button(
-    'Submit', 
-    disabled=True,
-    id='submit-user-button'
-),
+    html.Div([
+        dcc.Input(
+            id='user-id-input',
+            disabled=True,
+            size=50,
+            placeholder='Scan your RFID tag',
+            type='text',
+            value=''
+        ),
+        dbc.Modal(
+            [
+                dbc.ModalHeader(dbc.ModalTitle("User Creation")),
+                dbc.ModalBody("", id='alert_body'),
+            ],
+            id="alert",
+            is_open=False,
+        )
+    ], className="mb-4"),
     
-dcc.Interval(
-    id='interval-component',
-    interval=1000, # in milliseconds
-    n_intervals=0
-)
-])
+    html.Div([
+        # name
+        dcc.Input(
+            id='name-input',
+            size=50,
+            placeholder='Enter your name',
+            type='text'
+        ),
+    ], className="mb-4"),
+    
+    html.Div([
+        # temp threshold
+        daq.NumericInput(
+            id='temp-threshold-input',
+            disabled=False,
+            size=150,
+            min=-40,
+            max=40,
+        )
+    ], className="mb-4"),
+    
+    html.Div([
+        # humidity threshold
+        daq.NumericInput(
+            id='humidity-threshold-input',
+            disabled=False,
+            size=150,
+            min=0,
+            max=100,
+
+        ),
+    ], className="mb-4"),
+    
+    html.Div([
+        # light intensity threshold
+        daq.NumericInput(
+            id='light-threshold-input',
+            disabled=False,
+            size=150,
+            min=0,
+            max=1000,
+
+        ),
+    ], className="mb-5"),
+    
+    html.Div([
+        html.Button(
+            'Submit', 
+            disabled=True,
+            id='submit-user-button'
+        ),
+    ], className="mb-4"),
+      
+    dcc.Interval(
+        id='interval-component',
+        interval=1000, # in milliseconds
+        n_intervals=0
+    )
+], className="text-center mt-5"
+                       )
 
 # to disable/enable button
 @callback(
@@ -120,15 +131,12 @@ def enable_button(user_id, name, temp, humidity, light):
 def button_click(n_clicks, user_id, name, temp, humidity, light):
     
     if ("submit-user-button" == ctx.triggered_id):
-        
-        
         if (db_connection.insertUser(user_id, name, str(temp), str(humidity), str(light))):
-            return True, "User has been created"
+            return True, "User has been created", None, None, None, None, None 
         else:
-            return True, "User already exists"
-        
+            return True, "User already exists", None, name, str(temp), str(humidity), str(light)
     
-    return False
+    return False, "", user_id, name, str(temp), str(humidity), str(light)
 
 @callback(Output('user-id-input', 'value'),
           [Input('interval-component', 'n_intervals')])
@@ -159,5 +167,5 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
-client.connect("192.168.0.153", 1883, 80)
-client.loop_start()
+# client.connect("192.168.0.153", 1883, 80)
+# client.loop_start()

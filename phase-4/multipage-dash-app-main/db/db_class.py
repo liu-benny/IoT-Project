@@ -33,9 +33,6 @@ LightThreshold INT)''')
         
         self.readAll()
         
-        
-        
-        
     def fetch_table_data(self, table_name):
     # The connect() constructor creates a connection to the MySQL server and returns a MySQLConnection object.
         cnx = mysql.connector.connect(
@@ -76,42 +73,25 @@ LightThreshold INT)''')
     def insertUser(self, user_id, name, temp_threshold, humidity_threshold, light_threshold):
         sql = "INSERT INTO users (UserID, Name, TempThreshold, HumidityThreshold, LightThreshold) VALUES (%s, %s, %s, %s, %s)"
         values = (user_id, name, temp_threshold, humidity_threshold, light_threshold)
-        self.mycursor.execute(sql, values)
-
+        
         ids = self.getAllIds()
-        print(ids)
         
         for id in ids:
-            if user_id in id:
+            if str(user_id) == str(id):
                 return False
                 
+        self.mycursor.execute(sql, values)
         self.mydb.commit()
         self.export('users')
         return True
     
-    def updateTempThreshold(self, temp_threshold):
-        sql = "UPDATE users SET TempThreshold = %d WHERE UserId = %s"
-        values = (temp_threshold, user_id)
+    def updateThresholds(self, temp_threshold, humidity_threshold, light_threshold):
+        sql = "UPDATE users SET TempThreshold = %d, HumidityThreshold = %d, LightThreshold = %d WHERE UserId = %s"
+        values = (temp_threshold, humidity_threshold, light_threshold, user_id)
         self.mycursor.execute(sql, values)
         
         self.mydb.commit()
         export('users')
-    
-    def updateHumidityThreshold(self, humidity_threshold):
-        sql = "UPDATE users SET HumidityThreshold = %d WHERE UserId = %s"
-        values = (humidity_threshold, user_id)
-        self.mycursor.execute(sql, values)
-        
-        self.mydb.commit()
-        self.export('users')
-    
-    def updateLightThreshold(self, light_threshold):
-        sql = "UPDATE users SET LightThreshold = %d WHERE UserId = %s"
-        values = (light_threshold, user_id)
-        self.mycursor.execute(sql, values)
-        
-        self.mydb.commit()
-        self.export('users')
     
     def changeUser(self, user_id):
         sql = "SELECT * FROM users WHERE UserId='" + user_id + "'"
