@@ -11,7 +11,8 @@ import dash_bootstrap_components as dbc
 from app import app
 
 # Connect to your app pages
-from pages import page1, page2
+# from pages import page1, page2
+from pages import page1
 
 # Connect the navbar to the index
 from components import navbar
@@ -43,12 +44,13 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname == '/page1':
-        return page1.layout
-    if pathname == '/page2':
-        return page2.layout
-    else:
-        return page1.layout
+    # if pathname == '/page1':
+    #     return page1.layout
+    # if pathname == '/page2':
+    #     return page2.layout
+    # else:
+    #     return page1.layout
+    return page1.layout
 
 # Run the app on localhost:8050
 if __name__ == '__main__':

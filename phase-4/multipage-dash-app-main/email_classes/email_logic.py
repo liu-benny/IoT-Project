@@ -1,7 +1,6 @@
 import email
 import imaplib
 import smtplib
-import datetime
 
 class EmailController:
     def __init__(self, server, user, password, subject):
@@ -115,7 +114,7 @@ Subject: {sbjt}
                             #do not change received or else it will stop looking when bad response   
                             return 2
                    
-                   #once you have the check to see if its from user or from code
+                    #once you have the check to see if its from user or from code
                     # then you can return 3
                    
     def test(self):

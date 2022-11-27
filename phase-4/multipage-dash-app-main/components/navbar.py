@@ -24,7 +24,7 @@ def Navbar():
         ),
     ],
     style={
-        'min-width' : '800px'
+        'min-width' : '1500px'
     },
     brand="Smart Home",
     

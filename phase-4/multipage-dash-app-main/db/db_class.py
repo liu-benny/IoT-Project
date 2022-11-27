@@ -3,9 +3,9 @@ import mysql.connector
 class DbConnector:
     def __init__(self, default_admin_card):
         self.mydb = mysql.connector.connect(
-          host="localhost",
-          user="root",
-          password="root"
+            host="localhost",
+            user="root",
+            password=""
         )
 
         self.mycursor = self.mydb.cursor()
@@ -29,29 +29,17 @@ LightThreshold INT)''')
             self.insertUser(default_admin_card, "admin", 22, 80, 500)
         
         self.mycursor.execute("USE smarthome_db")
-        self.changeUser(default_admin_card)
+        self.updateCurrentUser(default_admin_card)
         
-        self.readAll()
+        # self.readAll()
         
     def fetch_table_data(self, table_name):
     # The connect() constructor creates a connection to the MySQL server and returns a MySQLConnection object.
-        cnx = mysql.connector.connect(
-            host='localhost',
-            database='smarthome_db',
-            user='root',
-            password='root'
-        )
+        self.mycursor.execute('select * from ' + table_name)
 
-        cursor = cnx.cursor()
-        cursor.execute('select * from ' + table_name)
+        header = [row[0] for row in self.mycursor.description]
 
-        header = [row[0] for row in cursor.description]
-
-        rows = cursor.fetchall()
-
-        # Closing connection
-        cnx.close()
-
+        rows = self.mycursor.fetchall()
         return header, rows
 
 
@@ -85,26 +73,32 @@ LightThreshold INT)''')
         self.export('users')
         return True
     
-    def updateThresholds(self, temp_threshold, humidity_threshold, light_threshold):
-        sql = "UPDATE users SET TempThreshold = %d, HumidityThreshold = %d, LightThreshold = %d WHERE UserId = %s"
-        values = (temp_threshold, humidity_threshold, light_threshold, user_id)
+    def updateThresholds(self, user_id, name, temp_threshold, humidity_threshold, light_threshold):
+        sql = "UPDATE users SET Name = %s, TempThreshold = %s, HumidityThreshold = %s, LightThreshold = %s WHERE UserID = %s"
+        values = (name, temp_threshold, humidity_threshold, light_threshold, user_id)
         self.mycursor.execute(sql, values)
         
         self.mydb.commit()
-        export('users')
+        self.export('users')
+
+        return True
     
-    def changeUser(self, user_id):
-        sql = "SELECT * FROM users WHERE UserId='" + user_id + "'"
+    def updateCurrentUser(self, user_id):
+        sql = "SELECT * FROM users"
 
         self.mycursor.execute(sql)
         myresult = self.mycursor.fetchall()
 
         for row in myresult:
-            self.current_user_id = row[0]
-            self.current_name = row[1]
-            self.current_temp_threshold = row[2]
-            self.current_humidity_threshold = row[3]
-            self.current_light_threshold = row[4]
+            if (row[0] == user_id):
+                self.current_user_id = row[0]
+                self.current_name = row[1]
+                self.current_temp_threshold = row[2]
+                self.current_humidity_threshold = row[3]
+                self.current_light_threshold = row[4]
+                return True
+        
+        return False
     
     def readAll(self):
         sql = "SELECT * FROM users"
