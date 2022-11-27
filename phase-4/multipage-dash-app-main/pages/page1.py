@@ -50,9 +50,13 @@ GPIO.setup(fan2,GPIO.OUT)
 GPIO.setup(fan3,GPIO.OUT) 
 
 #email controller for fan and light
-fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
-light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
-login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
+# fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
+# light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
+# login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
+
+fan_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
+light_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
+login_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
 
 #Database connection with default admin card
 admin_card = "aaaaaaaaaaa"
@@ -69,7 +73,7 @@ class RfidScan:
         self.id = id
         # self.scan_new_card = False
         
-lvl = LightLevel(-1)
+lvl = LightLevel(21)
 rfid_id = RfidScan(admin_card)
 
 # style for dashboard boxes
@@ -160,7 +164,8 @@ layout = html.Div([
 
             html.Div([
                 html.Div([
-                    dcc.Input(
+                    dbc.Label("User ID"),
+                    dbc.Input(
                         id='user-id-input',
                         disabled=True,
                         placeholder='Scan your RFID tag',
@@ -172,9 +177,10 @@ layout = html.Div([
                     style= {"width" : "100%"}
                 ),
                 
-                html.Div([
+                dbc.InputGroup([
                     # name
-                    dcc.Input(
+                    dbc.Label("Name"),
+                    dbc.Input(
                         id='name-input',
                         placeholder='Enter your name',
                         type='text',
@@ -184,26 +190,30 @@ layout = html.Div([
                     style= {"width" : "100%"}
                 ),
                 
-                html.Div([
+                dbc.InputGroup([
                     # temp threshold
-                    daq.NumericInput(
+                    dbc.Label("Temperature Preference"),
+                    dbc.Input(
                         id='temp-threshold-input',
+                        placeholder="Temperature",
                         disabled=False,
-                        size=200,
+                        type="number",
                         min=-40,
                         max=40,
-                        style= {"width" : "100%"},
+                        style= {"width" : "100%"}
                     )], 
                     className="mb-3",
                     style= {"width" : "100%"}
                 ),
                 
-                html.Div([
+                dbc.InputGroup([
                     # humidity threshold
-                    daq.NumericInput(
+                    dbc.Label("Humidity Preference"),
+                    dbc.Input(
                         id='humidity-threshold-input',
+                        placeholder="Humidity",
                         disabled=False,
-                        size=200,
+                        type="number",
                         min=0,
                         max=100,
                         style= {"width" : "100%"}
@@ -212,16 +222,19 @@ layout = html.Div([
                     style= {"width" : "100%"}
                 ),
                 
-                html.Div([
+                dbc.InputGroup([
                     # light intensity threshold
-                    daq.NumericInput(
+                    dbc.Label("Light Preference"),
+                    dbc.Input(
                         id='light-threshold-input',
+                        placeholder="Lumens",
                         disabled=False,
+                        type="number",
                         min=0,
                         max=1000,
                         style= {"width" : "100%"}
                     )], 
-                    className="mb-3",
+                    className="mb-5",
                     style= {"width" : "100%"}
                 ),
                 
@@ -439,7 +452,7 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
             current_time = now.strftime("%H:%M:%S")
             current_date = now.strftime("%Y-%m-%d")
             
-            # light_email_controller.send_email('Light is lower than 200. Turning on lights at ' + current_time + ' on ' + current_date)
+            light_email_controller.send_email('Light is lower than 200. Turning on lights at ' + current_time + ' on ' + current_date)
             light_email_controller.sent = True
             print("email sent")
             
@@ -451,7 +464,7 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
         # if email is already sent or if light level is high, do not change
         else:
             GPIO.output(light,GPIO.LOW)
-            # light_email_controller.sent = False
+            light_email_controller.sent = False
             
             if not 'danger' in light_indicator:
                 soundFunction.lightOff()
@@ -459,8 +472,9 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
             return f'bi bi-lightbulb-off text-danger', False, modal_open, "Off"
     
     # once over threshold, allows email to be sent again later. otherwise, remove if here and add in else above.
-    if (lvl.light_level > 0 and lvl.light_level > db_connection.current_light_threshold):
-        light_email_controller.sent = False
+    light_email_controller.sent = False
+    # if (lvl.light_level > 0 and lvl.light_level > db_connection.current_light_threshold):
+    #     light_email_controller.sent = False
 
     # turn light on
     if not 'success' in light_indicator:
@@ -532,7 +546,7 @@ def check_temperature(interval, isOn):
     # check if fan is on, temp is over threshold.
     # received has to be checked since it needs response
     if (temp > db_connection.current_temp_threshold and isOn == False and not fan_email_controller.received):
-        if (not fan_email_controller.sent):
+        if not fan_email_controller.sent:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
             current_date = now.strftime("%Y-%m-%d")
@@ -540,23 +554,27 @@ def check_temperature(interval, isOn):
             fan_email_controller.send_email(message)
             fan_email_controller.sent = True
         else:
-            if (fan_email_controller.check_email_response() == 1):
+            email_response = fan_email_controller.check_email_response()
+
+            if (email_response == 1):
                 #turn on fan
                 message =  "Fan has turned on."
                 fan_email_controller.send_email(message)
                 fan_email_controller.sent = False
+                fan_email_controller.received = True
                 
                 return str(temp) + u'\N{DEGREE SIGN} C', temp, True
             
-            elif (fan_email_controller.check_email_response() == 0):
+            elif (email_response == 0):
                 #keep fan off
                 message =  "Fan will remain off."
                 fan_email_controller.send_email(message)
                 fan_email_controller.sent = False
+                fan_email_controller.received = True
             
-            elif (fan_email_controller.check_email_response() == 2):
+            elif (email_response == 2):
                 #send another email to say it does not understand.
-                message =  "Response not understood. Please answer with 'YES' or 'NO'."
+                message =  "Response not understood. Please answer with 'YES' or 'NO' as the first part of the message."
                 fan_email_controller.send_email(message)
     
     return str(temp) + u'\N{DEGREE SIGN} C' , temp, isOn
@@ -634,7 +652,7 @@ def update_user_id(interval, user_id):
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
         current_date = now.strftime("%Y-%m-%d")
-        # login_email_controller.send_email("User " + user_id + " has logged in at " + current_time + "on"  + current_date)
+        login_email_controller.send_email("User " + rfid_id.id + " has logged in at " + current_time + " on "  + current_date)
         
         return db_connection.current_user_id, True, "User " + user_id + " logged in successfully."
     

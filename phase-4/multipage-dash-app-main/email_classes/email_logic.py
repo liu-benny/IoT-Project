@@ -39,7 +39,8 @@ Subject: {sbjt}
     def check_email_response(self):
         
         # connect to the server and go to its inbox
-        inbox = imaplib.IMAP4_SSL(self.server)
+        # inbox = imaplib.IMAP4_SSL(self.server)
+        inbox = imaplib.IMAP4(self.server)
         inbox.login(self.user, self.password)
         inbox.select("inbox")
 
@@ -90,25 +91,23 @@ Subject: {sbjt}
                             
                             # check mail content with or without caps
                             filter = "YES"
-                            if (filter.casefold() in mail_content.casefold()):
+                            if mail_content.casefold().find(filter.casefold()) == 0:
                                 # print mail
                                 print(f"From: {mail_sender}")
                                 print(f"To: {mail_receiver}")
                                 print(f"Subject: {mail_subject}")
                                 print(f"Content: {mail_content}")
                                 
-                                self.received = True
                                 return 1
                             
                             filter = "NO"
-                            if (filter.casefold() in mail_content.casefold()):
+                            if mail_content.casefold().find(filter.casefold()) == 0:
                                 # print mail
                                 print(f"From: {mail_sender}")
                                 print(f"To: {mail_receiver}")
                                 print(f"Subject: {mail_subject}")
                                 print(f"Content: {mail_content}")
                                 
-                                self.received = True
                                 return 0
                             
                             #do not change received or else it will stop looking when bad response   

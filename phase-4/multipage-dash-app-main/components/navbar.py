@@ -11,8 +11,8 @@ def Navbar():
 
     layout = dbc.NavbarSimple(
     children=[
-        dbc.NavItem(dbc.NavLink("Page 1", href="/page1")),
-        dbc.NavItem(dbc.NavLink("Page 2", href="/page2")),
+        # dbc.NavItem(dbc.NavLink("Page 1", href="/page1")),
+        # dbc.NavItem(dbc.NavLink("Page 2", href="/page2")),
         dbc.DropdownMenu(
             children=[
 #                 dbc.DropdownMenuItem("Theme", header=True),#############################################################################################
