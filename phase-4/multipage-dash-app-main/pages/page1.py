@@ -7,6 +7,9 @@ from dash.exceptions import PreventUpdate
 # import for mqtt, light and rfid
 import paho.mqtt.client as mqtt
 
+# import bluetooth for counting
+import bluetooth
+
 # sound function for light and fan
 import soundFunction
 
@@ -16,16 +19,6 @@ from datetime import datetime
 
 # db class
 from db.db_class import DbConnector
-
-# fake rpi ------------------------------------------------------------------TO REMOVE -
-import sys
-import fake_rpi
-
-sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
-sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
-sys.modules['smbus'] = fake_rpi.smbus # Fake smbus (I2C)
-# --------------------------------------------------------------------------------------
-
 
 #Libraries
 import components.DHT11.DHT11 as DHT
@@ -50,13 +43,13 @@ GPIO.setup(fan2,GPIO.OUT)
 GPIO.setup(fan3,GPIO.OUT) 
 
 #email controller for fan and light
-# fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
-# light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
-# login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
+fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
+light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
+login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
 
-fan_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
-light_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
-login_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
+# fan_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
+# light_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
+# login_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
 
 #Database connection with default admin card
 admin_card = "aaaaaaaaaaa"
@@ -100,7 +93,7 @@ box_name_dict = {
 box_bottom_dict = {
     'border-top': '2px solid lightblue',
     'line-height' : '40px',
-    'font': 'bold 16px/40px Arial, sans-serif',
+    'font': 'bold 14px/40px Arial, sans-serif',
     'height': '40px',
     'width' : '50%',
     'padding' : '0px 10px',
@@ -250,17 +243,16 @@ layout = html.Div([
                 )],
                 
                 className="input-group mt-5"
-            ),
-        ],
-        style = {
-            'text-align': 'left',
-            'padding': '25px',
-            'height': '900px',
-            'min-width' : "250px", 
-            'width' : "100%", 
-            'display': 'inline-block',
-            'background-color' : 'rgba(177, 177, 177, 0.4)'
-        }),
+            )],
+            style = {
+                'text-align': 'left',
+                'padding': '25px',
+                'height': '900px',
+                'min-width' : "250px", 
+                'min-width' : "100%", 
+                'display': 'inline-block',
+                'background-color' : 'rgba(177, 177, 177, 0.4)'
+            }),
     ],
         style = {
             'text-align': 'center',
@@ -408,6 +400,40 @@ layout = html.Div([
         
             style = box_style_dict | {'float': 'left'}
         ),
+
+
+        # box for bluetooth devices detection
+        html.Div([
+            html.Div(
+                ['Bluetooth Devices',], 
+                style = box_name_dict | {'background-color' : 'rgba(19, 62, 191, 0.55)'}
+            ),
+            
+            # humidity indicator (thermometer icon)
+            html.Div([
+                html.I(
+                    id='bluetooth',
+                    className="bi bi-bluetooth",
+                    style={'font-size': '10rem','width':'30px'}
+                )], 
+            
+                style = {'float':'right', 'width' : '100%', 'padding-top': '25px'}
+            ),
+
+            dbc.Button(
+                'Find Devices', 
+                disabled=False,
+                id='find-bluetooth-button',
+                style= {"width" : "50%"}
+            ), 
+            
+            html.Div([
+                html.Div(['Device number'], style = box_label_dict),
+                html.Div(['N/A'], id='bluetooth-number', style = box_num_dict),
+            ])], 
+        
+            style = box_style_dict | {'float': 'left'}
+        ),
         
         # to clear all the boxes for background to reach bottom
         html.Div(
@@ -540,8 +566,8 @@ def check_fan_switch(isOn, fan_indicator):
      Input('fan-switch','on')]
 )
 def check_temperature(interval, isOn):
-    # temp = DHT.get_temperature()
-    temp = 22
+    temp = DHT.get_temperature()
+    # temp = 22
     
     # check if fan is on, temp is over threshold.
     # received has to be checked since it needs response
@@ -587,8 +613,8 @@ def check_temperature(interval, isOn):
     [Input('interval','n_intervals')]
 )
 def check_humidity(interval):
-    # return DHT.get_humidity() + "%", DHT.get_humidity()
-    return str(22) + "%", 22
+    return DHT.get_humidity() + "%", DHT.get_humidity()
+    # return str(22) + "%", 22
 
 
 # to disable/enable button for changing thesholds
@@ -670,6 +696,20 @@ def update_user_id(interval, user_id):
 def update_user_profile(user_id):
     return db_connection.current_name, db_connection.current_temp_threshold, db_connection.current_humidity_threshold, db_connection.current_light_threshold
 
+# callback for bluetooth
+@callback(
+    [Output('bluetooth-number', 'children'),
+     Output('bluetooth', 'className')],
+    [Input('find-bluetooth-button', 'n_clicks')],
+    [State('bluetooth-number', 'children')]
+)
+def update_bluetooth_devices(n_clicks, current_value):
+    if ("find-bluetooth-button" == ctx.triggered_id):
+        devices = bluetooth.discover_devices(duration=5, lookup_names = True, lookup_class = True)
+        return len(devices), 'bi bi-bluetooth text-primary'
+    
+    return current_value, 'bi bi-bluetooth'
+
 
 # callback for receiving CONNACK response from mqtt server
 def on_connect(client, userdata, flags, rc):
@@ -694,5 +734,5 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # connecting mqtt
-# client.connect("192.168.0.153", 1883, 80)
-# client.loop_start()
+client.connect("192.168.0.153", 1883, 80)
+client.loop_start()
