@@ -1,6 +1,6 @@
 import simpleaudio as sa
 
-direct = "sounds/"
+direct = "/home/benny/Desktop/IoT-Project/phase-4/multipage-dash-app-main/sounds/"
 
 filename1 = direct + 'sound1.wav'
 wave_obj1 = sa.WaveObject.from_wave_file(filename1)

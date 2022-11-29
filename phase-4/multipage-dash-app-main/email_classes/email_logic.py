@@ -39,8 +39,8 @@ Subject: {sbjt}
     def check_email_response(self):
         
         # connect to the server and go to its inbox
-        # inbox = imaplib.IMAP4_SSL(self.server)
-        inbox = imaplib.IMAP4(self.server)
+        inbox = imaplib.IMAP4_SSL(self.server)
+        # inbox = imaplib.IMAP4(self.server)
         inbox.login(self.user, self.password)
         inbox.select("inbox")
 
@@ -90,8 +90,10 @@ Subject: {sbjt}
                                 mail_content = recieved_message.get_payload()
                             
                             # check mail content with or without caps
+                            
                             filter = "YES"
-                            if mail_content.casefold().find(filter.casefold()) == 0:
+                            print(mail_content.casefold().find(filter.casefold()))
+                            if mail_content.casefold().find(filter.casefold()) == 2:
                                 # print mail
                                 print(f"From: {mail_sender}")
                                 print(f"To: {mail_receiver}")
@@ -101,7 +103,7 @@ Subject: {sbjt}
                                 return 1
                             
                             filter = "NO"
-                            if mail_content.casefold().find(filter.casefold()) == 0:
+                            if mail_content.casefold().find(filter.casefold()) == 2:
                                 # print mail
                                 print(f"From: {mail_sender}")
                                 print(f"To: {mail_receiver}")

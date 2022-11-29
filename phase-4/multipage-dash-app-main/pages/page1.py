@@ -478,7 +478,7 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
             current_time = now.strftime("%H:%M:%S")
             current_date = now.strftime("%Y-%m-%d")
             
-            light_email_controller.send_email('Light is lower than 200. Turning on lights at ' + current_time + ' on ' + current_date)
+            light_email_controller.send_email('Light is lower than ' + str(db_connection.current_light_threshold) + '.' + ' Turning on lights at ' + current_time + ' on ' + current_date)
             light_email_controller.sent = True
             print("email sent")
             
@@ -490,7 +490,7 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
         # if email is already sent or if light level is high, do not change
         else:
             GPIO.output(light,GPIO.LOW)
-            light_email_controller.sent = False
+            # light_email_controller.sent = False
             
             if not 'danger' in light_indicator:
                 soundFunction.lightOff()
@@ -498,9 +498,9 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
             return f'bi bi-lightbulb-off text-danger', False, modal_open, "Off"
     
     # once over threshold, allows email to be sent again later. otherwise, remove if here and add in else above.
-    light_email_controller.sent = False
-    # if (lvl.light_level > 0 and lvl.light_level > db_connection.current_light_threshold):
-    #     light_email_controller.sent = False
+    # light_email_controller.sent = False
+    if (lvl.light_level > 0 and lvl.light_level > db_connection.current_light_threshold):
+        light_email_controller.sent = False
 
     # turn light on
     if not 'success' in light_indicator:
@@ -531,7 +531,7 @@ def update_intensity(interval):
     State('fan', 'className')
 )
 def check_fan_switch(isOn, fan_indicator):
-    print(fan_indicator)
+    
 
     # checks if the state of fan and switch is matching to skip
     if isOn == False:
@@ -613,7 +613,7 @@ def check_temperature(interval, isOn):
     [Input('interval','n_intervals')]
 )
 def check_humidity(interval):
-    return DHT.get_humidity() + "%", DHT.get_humidity()
+    return str(DHT.get_humidity()) + "%", DHT.get_humidity()
     # return str(22) + "%", 22
 
 
@@ -682,7 +682,9 @@ def update_user_id(interval, user_id):
         
         return db_connection.current_user_id, True, "User " + user_id + " logged in successfully."
     
-    return user_id, True, "User " + rfid_id.id + " not found, could not log in."
+    temp_id = rfid_id.id
+    rfid_id.id = db_connection.current_user_id
+    return user_id, True, "User " + temp_id + " not found, could not log in."
 
 
 # callback to change values when user logs in
@@ -734,5 +736,5 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # connecting mqtt
-client.connect("192.168.0.153", 1883, 80)
+client.connect("192.168.0.193", 1883, 80)
 client.loop_start()

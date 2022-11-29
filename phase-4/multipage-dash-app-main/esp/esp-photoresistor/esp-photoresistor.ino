@@ -5,7 +5,7 @@
 //changed to class wifi
 const char* ssid = "TP-Link_2AD8";
 const char* password = "14730078";
-const char* mqtt_server = "192.168.0.153";
+const char* mqtt_server = "192.168.0.193";
 
 const int pResistor = A0;
 
