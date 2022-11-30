@@ -153,9 +153,24 @@ layout = html.Div([
     # user info column
     html.Div([
         html.Div([
+
             html.H2(["User Profile"]),
 
             html.Div([
+
+                html.Div([
+                    html.Img(
+                        id='avatar',
+                        src='https://cdn.theatlantic.com/media/mt/science/cat_caviar.jpg', 
+                        # src ='https://icons.iconarchive.com/icons/paomedia/small-n-flat/256/sign-info-icon.png',
+                        alt='Avatar',
+                        
+                        style={'border-radius' : '50%', 'height':'150px', 'width': '150px',}
+                        )],
+                    className="mb-3",
+                    style= {"width" : "50%",'margin-left': 'auto', 'margin-right':'auto'}
+                ),
+
                 html.Div([
                     dbc.Label("User ID"),
                     dbc.Input(
@@ -736,5 +751,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # connecting mqtt
-client.connect("192.168.0.193", 1883, 80)
+# client.connect("192.168.0.153", 1883, 80)
+# client.connect("192.168.0.193", 1883, 80)
+client.connect("192.168.86.30", 1883, 80)
 client.loop_start()
