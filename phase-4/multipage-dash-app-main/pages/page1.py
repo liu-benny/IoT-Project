@@ -52,7 +52,7 @@ login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com'
 # login_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
 
 #Database connection with default admin card
-admin_card = "aaaaaaaaaaa"
+admin_card = "2142744174"
 db_connection = DbConnector(admin_card)
 
 #light level set outside of range of light sensor to start

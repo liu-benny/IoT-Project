@@ -6,6 +6,7 @@ class DbConnector:
             host="localhost",
             user="root",
             password="root"
+            # password=""
         )
 
         self.mycursor = self.mydb.cursor()
@@ -21,12 +22,13 @@ class DbConnector:
             self.mycursor.execute("CREATE DATABASE smarthome_db")
             self.mycursor.execute("USE smarthome_db")
             self.mycursor.execute('''CREATE TABLE users (
-UserID VARCHAR(255), 
+UserID VARCHAR(255) PRIMARY KEY, 
 Name VARCHAR(255),
 TempThreshold INT,
 HumidityThreshold INT,
 LightThreshold INT)''')
             self.insertUser(default_admin_card, "admin", 22, 80, 500)
+            self.addDefaultUsers()
         
         self.mycursor.execute("USE smarthome_db")
         self.updateCurrentUser(default_admin_card)
@@ -125,3 +127,8 @@ LightThreshold INT)''')
             ids.append(row[0])
         
         return ids
+    
+    def addDefaultUsers(self):
+        self.insertUser(18813910010, "John Denver", 20, 85, 300)
+        self.insertUser(1951804919, "George Foreman", 25, 70, 500)
+        self.insertUser(11515410413, "Angus Macgyver", 23, 60, 450)
