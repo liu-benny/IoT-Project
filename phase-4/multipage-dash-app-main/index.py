@@ -37,19 +37,13 @@ app.layout = html.Div([
      Input(ThemeSwitchAIO.ids.switch("theme"), "value"),
 )
 def update_graph_theme(toggle):
-    template = "cosmo" if toggle else "cyborg"
+    template = "cosmo" if toggle else "DARKLY"
     return px.line(template=template)
 
 
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    # if pathname == '/page1':
-    #     return page1.layout
-    # if pathname == '/page2':
-    #     return page2.layout
-    # else:
-    #     return page1.layout
     return page1.layout
 
 # Run the app on localhost:8050
