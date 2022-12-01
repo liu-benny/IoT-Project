@@ -20,6 +20,9 @@ from datetime import datetime
 # db class
 from db.db_class import DbConnector
 
+# constants
+import constants
+
 #Libraries
 import components.DHT11.DHT11 as DHT
 import RPi.GPIO as GPIO
@@ -43,20 +46,13 @@ GPIO.setup(fan2,GPIO.OUT)
 GPIO.setup(fan3,GPIO.OUT) 
 
 #email controller for fan and light
-fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
-light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
-login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
+fan_email_controller = EmailController(constants.MAIL_SERVER_IP, constants.USER_EMAIL_ADDRESS, constants.USER_EMAIL_PASSWORD, "Smart Home Fan Control")
+light_email_controller = EmailController(constants.MAIL_SERVER_IP, constants.USER_EMAIL_ADDRESS, constants.USER_EMAIL_PASSWORD, "Smart Home Light Control")
+login_email_controller = EmailController(constants.MAIL_SERVER_IP, constants.USER_EMAIL_ADDRESS, constants.USER_EMAIL_PASSWORD, "Smart Home Login")
 
-# fan_email_controller = EmailController('192.168.137.1', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
-# light_email_controller = EmailController('192.168.137.1', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
-# login_email_controller = EmailController('192.168.137.1', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
-
-# fan_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
-# light_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
-# login_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
 
 #Database connection with default admin card
-admin_card = "2142744174"
+admin_card = constants.DEFAULT_ADMIN_CARD
 db_connection = DbConnector(admin_card)
 
 #light level set outside of range of light sensor to start
@@ -567,8 +563,8 @@ def check_fan_switch(isOn, fan_indicator):
         return f'bi bi-slash-circle text-danger', "Off"
     else:
         GPIO.output(fan1,GPIO.HIGH)
-        GPIO.output(fan2,GPIO.HIGH)
-        GPIO.output(fan3,GPIO.LOW)
+        GPIO.output(fan2,GPIO.LOW)
+        GPIO.output(fan3,GPIO.HIGH)
         
         # allows email to be received again, once manually turning on then turning off in the future
         fan_email_controller.received = False
@@ -766,5 +762,5 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # connecting mqtt
-client.connect("192.168.0.129", 1883, 80)
+client.connect(constants.MQTT_SERVER_IP, 1883, 80)
 client.loop_start()
