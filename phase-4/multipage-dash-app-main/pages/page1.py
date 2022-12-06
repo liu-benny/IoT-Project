@@ -47,6 +47,10 @@ fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 
 light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
 login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
 
+# fan_email_controller = EmailController('192.168.137.1', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
+# light_email_controller = EmailController('192.168.137.1', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
+# login_email_controller = EmailController('192.168.137.1', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
+
 # fan_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Fan Control")
 # light_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Light Control")
 # login_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'd34HqY87m6bL', "Smart Home Login")
@@ -66,7 +70,7 @@ class RfidScan:
         self.id = id
         # self.scan_new_card = False
         
-lvl = LightLevel(21)
+lvl = LightLevel(-1)
 rfid_id = RfidScan(admin_card)
 
 # style for dashboard boxes
@@ -153,9 +157,23 @@ layout = html.Div([
     # user info column
     html.Div([
         html.Div([
-            html.H2(["User Profile"]),
+            html.H2(["User Profile"], style={'font-size': '2rem'}),
 
             html.Div([
+                
+            html.Div([
+                html.Img(
+                    id='avatar',
+                    src='https://cdn.theatlantic.com/media/mt/science/cat_caviar.jpg', 
+                    # src ='https://icons.iconarchive.com/icons/paomedia/small-n-flat/256/sign-info-icon.png',
+                    alt='Avatar',
+
+                    style={'border-radius' : '50%', 'height':'150px', 'width': '150px',}
+                    )],
+                className="mb-3",
+                style= {"width" : "50%",'margin-left': 'auto', 'margin-right':'auto'}
+            ),
+
                 html.Div([
                     dbc.Label("User ID"),
                     dbc.Input(
@@ -247,7 +265,7 @@ layout = html.Div([
             style = {
                 'text-align': 'left',
                 'padding': '25px',
-                'height': '900px',
+                'height': '827px',
                 'min-width' : "250px", 
                 'min-width' : "100%", 
                 'display': 'inline-block',
@@ -267,7 +285,7 @@ layout = html.Div([
 
     # page content
     html.Div([
-        html.H1(["Smart Home Dashboard"]),
+        html.H1(["Smart Home Dashboard"], style={'font-size': '2.5rem'}),
         # first box for lights
         html.Div([
             html.Div(
@@ -408,31 +426,33 @@ layout = html.Div([
                 ['Bluetooth Devices',], 
                 style = box_name_dict | {'background-color' : 'rgba(19, 62, 191, 0.55)'}
             ),
-            
-            # humidity indicator (thermometer icon)
             html.Div([
                 html.I(
                     id='bluetooth',
                     className="bi bi-bluetooth",
-                    style={'font-size': '10rem','width':'30px'}
-                )], 
+                    style={'font-size': '4rem','width':'30px'}
+                )
+                ], 
             
-                style = {'float':'right', 'width' : '100%', 'padding-top': '25px'}
+                style = {'float':'left', 'width' : '50%', 'padding-top': '25px'}
             ),
-
-            dbc.Button(
-                'Find Devices', 
-                disabled=False,
-                id='find-bluetooth-button',
-                style= {"width" : "50%"}
-            ), 
+            html.Div([
+                dbc.Button(
+                    'Find Devices', 
+                    disabled=False,
+                    id='find-bluetooth-button',
+                    style= {"width" : "50%"}
+                ),
+            ],
+                style= {'float':'right', 'width' : '50%', 'padding-top': '50px'}
+            ),
             
             html.Div([
                 html.Div(['Device number'], style = box_label_dict),
                 html.Div(['N/A'], id='bluetooth-number', style = box_num_dict),
             ])], 
         
-            style = box_style_dict | {'float': 'left'}
+            style = box_style_dict | {'float': 'left', 'height':'260px', 'width' : '48%' }
         ),
         
         # to clear all the boxes for background to reach bottom
@@ -444,7 +464,7 @@ layout = html.Div([
         
         style={
             'text-align': 'center',
-            'padding': '25px',
+            'padding': '0px',
             'height' : '100%',
             'width' : '80%',
             'float': 'right',
@@ -472,8 +492,9 @@ layout = html.Div([
 )
 def check_light_switch(isOn, interval, light_indicator, modal_open):
     if isOn == False:
-        # if fan is off and light level is less than threshold with no email sent
+        #if fan is off and light level is less than threshold with no email sent
         if (lvl.light_level > 0 and lvl.light_level < db_connection.current_light_threshold and not light_email_controller.sent):
+           
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
             current_date = now.strftime("%Y-%m-%d")
@@ -490,7 +511,7 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
         # if email is already sent or if light level is high, do not change
         else:
             GPIO.output(light,GPIO.LOW)
-            # light_email_controller.sent = False
+            light_email_controller.sent = False
             
             if not 'danger' in light_indicator:
                 soundFunction.lightOff()
@@ -498,7 +519,7 @@ def check_light_switch(isOn, interval, light_indicator, modal_open):
             return f'bi bi-lightbulb-off text-danger', False, modal_open, "Off"
     
     # once over threshold, allows email to be sent again later. otherwise, remove if here and add in else above.
-    # light_email_controller.sent = False
+    light_email_controller.sent = False
     if (lvl.light_level > 0 and lvl.light_level > db_connection.current_light_threshold):
         light_email_controller.sent = False
 
@@ -523,7 +544,7 @@ def update_intensity(interval):
         return str(lvl.light_level)
 
 
-# callback for motor/fan
+#callback for motor/fan
 @callback(
     [Output('fan','className'),
      Output('fan-status', 'children')],
@@ -671,16 +692,16 @@ def button_click(n_clicks, user_id, name, temp, humidity, light):
     [State('user-id-input', 'value')]
 )
 def update_user_id(interval, user_id):
-    if (user_id == rfid_id.id):
+    if (str(user_id) == str(rfid_id.id)):
         raise PreventUpdate()
-    
+    print(rfid_id.id)
     if db_connection.updateCurrentUser(rfid_id.id):
         now = datetime.now()
         current_time = now.strftime("%H:%M:%S")
         current_date = now.strftime("%Y-%m-%d")
         login_email_controller.send_email("User " + rfid_id.id + " has logged in at " + current_time + " on "  + current_date)
         
-        return db_connection.current_user_id, True, "User " + user_id + " logged in successfully."
+        return db_connection.current_user_id, True, "User " + db_connection.current_user_id + " logged in successfully."
     
     temp_id = rfid_id.id
     rfid_id.id = db_connection.current_user_id
@@ -696,6 +717,12 @@ def update_user_id(interval, user_id):
     [Input('user-id-input', 'value')]
 )
 def update_user_profile(user_id):
+    fan_email_controller.sent = False
+    fan_email_controller.received = False
+    light_email_controller.sent = False
+    light_email_controller.received = False
+    login_email_controller.sent = False
+    login_email_controller.received = False
     return db_connection.current_name, db_connection.current_temp_threshold, db_connection.current_humidity_threshold, db_connection.current_light_threshold
 
 # callback for bluetooth
@@ -719,7 +746,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("Smarthome/ESP/light")
     client.subscribe("Smarthome/ESP/rfid")
 
-# callback for published message from mqtt server
+# callback for published message 1951804919from mqtt server
 def on_message(client, userdata, msg):
     # changing light
     if ('light' in msg.topic):
@@ -728,7 +755,8 @@ def on_message(client, userdata, msg):
     # changing rfid login
     if ('rfid' in msg.topic):
         rfid_id.id = str(msg.payload)[2:-1]
-        # db_connection.updateCurrentUser(str(msg.payload)[2:-1])
+        
+        
 
 # setting up mqtt
 client = mqtt.Client()
@@ -736,5 +764,5 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # connecting mqtt
-client.connect("192.168.0.193", 1883, 80)
+client.connect("192.168.0.129", 1883, 80)
 client.loop_start()
