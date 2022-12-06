@@ -29,7 +29,7 @@ TempThreshold INT,
 HumidityThreshold INT,
 LightThreshold INT,
 Avatar VARCHAR(255))''')
-            self.insertUser(default_admin_card, "admin", 22, 80, 500, )
+            self.insertUser(default_admin_card, "admin", 22, 80, 500, "https://cdn.theatlantic.com/media/mt/science/cat_caviar.jpg")
             self.addDefaultUsers()
         
         self.mycursor.execute("USE smarthome_db")
