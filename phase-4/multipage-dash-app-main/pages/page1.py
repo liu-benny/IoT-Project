@@ -161,18 +161,19 @@ layout = html.Div([
 
             html.Div([
                 
-            html.Div([
-                html.Img(
-                    id='avatar',
-                    src='https://cdn.theatlantic.com/media/mt/science/cat_caviar.jpg', 
-                    # src ='https://icons.iconarchive.com/icons/paomedia/small-n-flat/256/sign-info-icon.png',
-                    alt='Avatar',
+                # avatar image
+                html.Div([
+                    html.Img(
+                        id='avatar',
+                        src='https://cdn.theatlantic.com/media/mt/science/cat_caviar.jpg', 
+                        # src ='https://icons.iconarchive.com/icons/paomedia/small-n-flat/256/sign-info-icon.png',
+                        alt='Avatar',
 
-                    style={'border-radius' : '50%', 'height':'150px', 'width': '150px',}
-                    )],
-                className="mb-3",
-                style= {"width" : "50%",'margin-left': 'auto', 'margin-right':'auto'}
-            ),
+                        style={'border-radius' : '50%', 'height':'150px', 'width': '150px',}
+                        )],
+                    className="mb-3",
+                    style= {"width" : "50%",'margin-left': 'auto', 'margin-right':'auto'}
+                ),
 
                 html.Div([
                     dbc.Label("User ID"),
@@ -713,7 +714,8 @@ def update_user_id(interval, user_id):
     [Output('name-input', 'value'),
      Output('temp-threshold-input', 'value'),
      Output('humidity-threshold-input', 'value'),
-     Output('light-threshold-input', 'value')],
+     Output('light-threshold-input', 'value'),
+     Output('avatar', 'src')],
     [Input('user-id-input', 'value')]
 )
 def update_user_profile(user_id):
@@ -723,7 +725,7 @@ def update_user_profile(user_id):
     light_email_controller.received = False
     login_email_controller.sent = False
     login_email_controller.received = False
-    return db_connection.current_name, db_connection.current_temp_threshold, db_connection.current_humidity_threshold, db_connection.current_light_threshold
+    return db_connection.current_name, db_connection.current_temp_threshold, db_connection.current_humidity_threshold, db_connection.current_light_threshold, db_connection.avatar
 
 # callback for bluetooth
 @callback(
