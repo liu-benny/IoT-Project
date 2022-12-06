@@ -6,7 +6,7 @@ class DbConnector:
             host="localhost",
             user="root",
             password="root"
-            # password=""
+#             password=""
         )
 
         self.mycursor = self.mydb.cursor()
@@ -19,6 +19,7 @@ class DbConnector:
                 db_exists = True
 
         if (not db_exists):
+            
             self.mycursor.execute("CREATE DATABASE smarthome_db")
             self.mycursor.execute("USE smarthome_db")
             self.mycursor.execute('''CREATE TABLE users (
@@ -69,7 +70,7 @@ LightThreshold INT)''')
         for id in ids:
             if str(user_id) == str(id):
                 return False
-                
+                PRIMARY
         self.mycursor.execute(sql, values)
         self.mydb.commit()
         self.export('users')
@@ -90,9 +91,10 @@ LightThreshold INT)''')
 
         self.mycursor.execute(sql)
         myresult = self.mycursor.fetchall()
-
+        print(myresult)
         for row in myresult:
-            if (row[0] == user_id):
+            print(str(row[0]) + " " + str(user_id) + "ballzzzz")
+            if (str(row[0]) == str(user_id)):
                 self.current_user_id = row[0]
                 self.current_name = row[1]
                 self.current_temp_threshold = row[2]

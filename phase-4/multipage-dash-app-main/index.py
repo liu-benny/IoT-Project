@@ -4,8 +4,8 @@ from dash.dependencies import Input, Output
 import dash
 import dash_bootstrap_components as dbc
 
-# import plotly.express as px
-# from dash_bootstrap_templates import ThemeSwitchAIO
+import plotly.express as px
+from dash_bootstrap_templates import ThemeSwitchAIO
 
 # Connect to main app.py file
 from app import app
@@ -32,13 +32,13 @@ app.layout = html.Div([
     html.Div(id='page-content', children=[]), 
 ])
 
-# @app.callback(
-#     Output("theme-switch-graph", "figure"),
-#     Input(ThemeSwitchAIO.ids.switch("theme"), "value"),
-# )
-# def update_graph_theme(toggle):
-#     template = "cosmo" if toggle else "cyborg"
-#     return px.line(template=template)
+@app.callback(
+     Output("theme-switch-graph", "figure"),
+     Input(ThemeSwitchAIO.ids.switch("theme"), "value"),
+)
+def update_graph_theme(toggle):
+    template = "cosmo" if toggle else "cyborg"
+    return px.line(template=template)
 
 
 @app.callback(Output('page-content', 'children'),
