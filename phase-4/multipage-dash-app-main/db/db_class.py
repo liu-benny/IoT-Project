@@ -27,8 +27,9 @@ UserID VARCHAR(255) PRIMARY KEY,
 Name VARCHAR(255),
 TempThreshold INT,
 HumidityThreshold INT,
-LightThreshold INT)''')
-            self.insertUser(default_admin_card, "admin", 22, 80, 500)
+LightThreshold INT,
+Avatar VARCHAR(255))''')
+            self.insertUser(default_admin_card, "admin", 22, 80, 500, )
             self.addDefaultUsers()
         
         self.mycursor.execute("USE smarthome_db")
@@ -61,9 +62,9 @@ LightThreshold INT)''')
         f.close()
         print(str(len(rows)) + ' rows written successfully to ' + f.name)
         
-    def insertUser(self, user_id, name, temp_threshold, humidity_threshold, light_threshold):
-        sql = "INSERT INTO users (UserID, Name, TempThreshold, HumidityThreshold, LightThreshold) VALUES (%s, %s, %s, %s, %s)"
-        values = (user_id, name, temp_threshold, humidity_threshold, light_threshold)
+    def insertUser(self, user_id, name, temp_threshold, humidity_threshold, light_threshold, avatar):
+        sql = "INSERT INTO users (UserID, Name, TempThreshold, HumidityThreshold, LightThreshold, Avatar) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = (user_id, name, temp_threshold, humidity_threshold, light_threshold, avatar)
         
         ids = self.getAllIds()
         
@@ -93,13 +94,14 @@ LightThreshold INT)''')
         myresult = self.mycursor.fetchall()
         print(myresult)
         for row in myresult:
-            print(str(row[0]) + " " + str(user_id) + "ballzzzz")
+            # print(str(row[0]) + " " + str(user_id))
             if (str(row[0]) == str(user_id)):
                 self.current_user_id = row[0]
                 self.current_name = row[1]
                 self.current_temp_threshold = row[2]
                 self.current_humidity_threshold = row[3]
                 self.current_light_threshold = row[4]
+                self.avatar = row[5]
                 return True
         
         return False
@@ -116,6 +118,7 @@ LightThreshold INT)''')
             print(row[2])
             print(row[3])
             print(row[4])
+            print(row[5])
             
     def getAllIds(self):
         sql = "SELECT * FROM users"
@@ -131,6 +134,6 @@ LightThreshold INT)''')
         return ids
     
     def addDefaultUsers(self):
-        self.insertUser(18813910010, "John Denver", 20, 85, 300)
-        self.insertUser(1951804919, "George Foreman", 25, 70, 500)
-        self.insertUser(11515410413, "Angus Macgyver", 23, 60, 450)
+        self.insertUser(18813910010, "John Denver", 20, 85, 300, "https://sob-prd-cdn-products.azureedge.net/media/image/product/en/large/0002446306309.jpg")
+        self.insertUser(1951804919, "George Foreman", 25, 70, 500, "https://api.time.com/wp-content/uploads/2019/08/tired-spongebob-meme.png")
+        self.insertUser(11515410413, "Angus Macgyver", 23, 60, 450, "https://pyxis.nymag.com/v1/imgs/0f9/f96/029acbf4c6d8c67e138e1eb06a277204bf-05-patrick.rsquare.w700.jpg")
