@@ -64,7 +64,7 @@ class LightLevel:
 class RfidScan:
     def __init__(self, id):
         self.id = id
-        # self.scan_new_card = False
+        # self.scan_new_card =db_connection.current_temp_threshold False
         
 lvl = LightLevel(-1)
 rfid_id = RfidScan(admin_card)
@@ -589,12 +589,13 @@ def check_temperature(interval, isOn):
     
     # check if fan is on, temp is over threshold.
     # received has to be checked since it needs response
-    if (temp > db_connection.current_temp_threshold and isOn == False and not fan_email_controller.received):
+    if (temp > db_connection.current_temp_threshold and isOn == False and not fan_email_controller.received and db_connection.current_temp_threshold != None):
         if not fan_email_controller.sent:
             now = datetime.now()
             current_time = now.strftime("%H:%M:%S")
             current_date = now.strftime("%Y-%m-%d")
             message =  "The current temperature is {temp} at {time} on {date}. Would you like to turn on the fan?".format(temp=temp, time=current_time, date=current_date)
+            
             fan_email_controller.send_email(message)
             fan_email_controller.sent = True
         else:
