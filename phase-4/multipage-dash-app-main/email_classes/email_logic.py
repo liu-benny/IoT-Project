@@ -40,7 +40,7 @@ Subject: {sbjt}
         
         # connect to the server and go to its inbox
         inbox = imaplib.IMAP4_SSL(self.server)
-        # inbox = imaplib.IMAP4(self.server)
+        #inbox = imaplib.IMAP4(self.server)
         inbox.login(self.user, self.password)
         inbox.select("inbox")
 

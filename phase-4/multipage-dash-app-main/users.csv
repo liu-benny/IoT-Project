@@ -1,2 +1,5 @@
-UserID,Name,TempThreshold,HumidityThreshold,LightThreshold
-aaaaaaaaaaa,adminaaaaaaaa,20,82,500
+UserID,Name,TempThreshold,HumidityThreshold,LightThreshold,Avatar
+11515410413,Angus Macgyver,22,60,450,https://pyxis.nymag.com/v1/imgs/0f9/f96/029acbf4c6d8c67e138e1eb06a277204bf-05-patrick.rsquare.w700.jpg
+18813910010,John Denver,20,85,300,https://sob-prd-cdn-products.azureedge.net/media/image/product/en/large/0002446306309.jpg
+1951804919,George Foreman,21,70,500,https://api.time.com/wp-content/uploads/2019/08/tired-spongebob-meme.png
+2142744174,admin,22,80,500,https://cdn.theatlantic.com/media/mt/science/cat_caviar.jpg
