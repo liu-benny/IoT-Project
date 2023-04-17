@@ -43,13 +43,13 @@ GPIO.setup(fan2,GPIO.OUT)
 GPIO.setup(fan3,GPIO.OUT) 
 
 #email controller for fan and light
-fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', '***REMOVED***', "Smart Home Fan Control")
-light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', '***REMOVED***', "Smart Home Light Control")
-login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', '***REMOVED***', "Smart Home Login")
+fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'saucergoeshere', "Smart Home Fan Control")
+light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'saucergoeshere', "Smart Home Light Control")
+login_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'saucergoeshere', "Smart Home Login")
 
-# fan_email_controller = EmailController('localhost', '2082991@iotvanier.com', '***REMOVED***', "Smart Home Fan Control")
-# light_email_controller = EmailController('localhost', '2082991@iotvanier.com', '***REMOVED***', "Smart Home Light Control")
-# login_email_controller = EmailController('localhost', '2082991@iotvanier.com', '***REMOVED***', "Smart Home Login")
+# fan_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'saucergoeshere', "Smart Home Fan Control")
+# light_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'saucergoeshere', "Smart Home Light Control")
+# login_email_controller = EmailController('localhost', '2082991@iotvanier.com', 'saucergoeshere', "Smart Home Login")
 
 #Database connection with default admin card
 admin_card = "aaaaaaaaaaa"
