@@ -35,8 +35,8 @@ GPIO.setup(fan2,GPIO.OUT)
 GPIO.setup(fan3,GPIO.OUT) 
 
 #email controller for fan and light
-fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', '***REMOVED***')
-light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', '***REMOVED***')
+fan_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'saucergoeshere')
+light_email_controller = EmailController('192.168.0.11', '2082991@iotvanier.com', 'saucergoeshere')
 
 #light level set outside of range of light sensor to start
 

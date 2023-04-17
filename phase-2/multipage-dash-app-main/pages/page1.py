@@ -204,7 +204,7 @@ def check_temperature(interval, isOn):
     temp = DHT.get_temperature()
     
     user = '2082991@iotvanier.com'
-    password = '***REMOVED***'
+    password = 'saucergoeshere'
     
     #have to check if fan is on
     if (temp > 24 and not isOn):
